@@ -27,4 +27,4 @@ export const envSchema = z.object({
         .min(32, { message: "JWT_SECRET must be at least 32 characters long" }),
 });
 
-export type Config = z.infer<typeof envSchema>;
+export type EnvConfig = z.infer<typeof envSchema>;

@@ -1,16 +1,16 @@
 import pino, { stdTimeFunctions, type LoggerOptions } from "pino";
-import { config } from "../config";
+import { env } from "../config";
 import { NODE_ENVS } from "../constants/env.constants";
 
 const options: LoggerOptions = {
-  level: config.LOG_LEVEL,
+  level: env.LOG_LEVEL,
   timestamp: stdTimeFunctions.isoTime,
   serializers: {
     err: pino.stdSerializers.err,
   },
 };
 
-if (config.NODE_ENV !== NODE_ENVS.PRODUCTION) {
+if (env.NODE_ENV !== NODE_ENVS.PRODUCTION) {
   options.transport = {
     target: "pino-pretty",
     options: {
