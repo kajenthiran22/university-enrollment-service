@@ -1,6 +1,5 @@
 import app from "./app.js";
-import { config, logger } from "./config";
-import { connectToDatabase } from "./config/database.js";
+import { config, logger, connectToDatabase } from "./config";
 
 const startServer = async (): Promise<void> => {
     try {
