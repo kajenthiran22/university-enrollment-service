@@ -1,15 +1,6 @@
 import mongoose, { Schema } from "mongoose";
+import type { User } from "../types/user.types";
 import { USER_ROLE_VALUES, USER_ROLES, USER_STATUS_VALUES, USER_STATUS } from "../constants/auth.constants";
-
-export interface User extends Document {
-    name: string;
-    email: string;
-    password: string;
-    role: typeof USER_ROLE_VALUES[number];
-    status: typeof USER_STATUS_VALUES[number];
-    createdAt: Date;
-    updatedAt: Date;
-}
 
 const userSchema = new Schema<User>(
     {
