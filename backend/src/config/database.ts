@@ -1,13 +1,13 @@
 import mongoose from "mongoose";
-import { config, logger } from "../config";
+import { env, logger } from "../config";
 import { NODE_ENVS } from "../constants/env.constants";
 
 export const connectToDatabase = async (): Promise<void> => {
   try {
     mongoose.set("strictQuery", true);
 
-    await mongoose.connect(config.MONGODB_URI, {
-      autoIndex: config.NODE_ENV !== NODE_ENVS.PRODUCTION,
+    await mongoose.connect(env.MONGODB_URI, {
+      autoIndex: env.NODE_ENV !== NODE_ENVS.PRODUCTION,
       serverSelectionTimeoutMS: 5000,
     });
 

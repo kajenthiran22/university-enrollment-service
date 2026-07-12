@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import { envSchema, type Config } from "./env.schema";
+import { envSchema, type EnvConfig } from "./env.schema";
 
 const result = dotenv.config();
 
@@ -15,4 +15,4 @@ if (!parsed.success) {
   );
 }
 
-export const config: Readonly<Config> = Object.freeze(parsed.data);
+export const env: Readonly<EnvConfig> = Object.freeze(parsed.data);

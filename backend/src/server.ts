@@ -1,15 +1,14 @@
 import app from "./app.js";
-import { config, logger } from "./config";
-import { connectToDatabase } from "./config/database.js";
+import { env, logger, connectToDatabase } from "./config";
 
 const startServer = async (): Promise<void> => {
     try {
         await connectToDatabase();
 
-        const server = app.listen(config.PORT, () => {
+        const server = app.listen(env.PORT, () => {
             logger.info({
-                port: config.PORT,
-                environment: config.NODE_ENV,
+                port: env.PORT,
+                environment: env.NODE_ENV,
             },
                 "Server started successfully."
             );
