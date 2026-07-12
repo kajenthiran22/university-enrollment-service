@@ -4,14 +4,6 @@ import { USER_ROLE_VALUES, USER_ROLES, USER_STATUS_VALUES, USER_STATUS } from ".
 
 const userSchema = new Schema<User>(
     {
-        name: {
-            type: String,
-            required: true,
-            trim: true,
-            minlength: 3,
-            maxlength: 100,
-        },
-
         email: {
             type: String,
             required: true,
