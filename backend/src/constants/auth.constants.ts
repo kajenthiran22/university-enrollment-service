@@ -1,12 +1,12 @@
 export const USER_ROLES = {
   ADMIN: "admin",
-  STAFF: "staff",
+  LECTURER: "lecturer",
   STUDENT: "student",
 } as const;
 
 export const USER_ROLE_VALUES = [
   USER_ROLES.ADMIN,
-  USER_ROLES.STAFF,
+  USER_ROLES.LECTURER,
   USER_ROLES.STUDENT,
 ] as const;
 
