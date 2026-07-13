@@ -2,6 +2,7 @@ import { createUser, userExistsByEmail, findUserByEmail } from "../repositories/
 import { comparePassword, hashPassword } from "../utils/password.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt.util";
 import type { AuthResponse, JwtPayload, RegisterRequest, LoginRequest } from "../types/auth.types";
+import { findUserById } from "../repositories/user.repository";
 
 export const register = async (data: RegisterRequest): Promise<AuthResponse> => {
     const emailExists = await userExistsByEmail(data.email);
@@ -71,6 +72,26 @@ export const login = async (data: LoginRequest): Promise<AuthResponse> => {
         tokens: {
             accessToken: generateAccessToken(payload),
             refreshToken: generateRefreshToken(payload),
+        },
+    };
+};
+
+export const getCurrentUser = async (payload: JwtPayload): Promise<AuthResponse> => {
+    const user = await findUserById(payload.userId);
+
+    if (!user) {
+        throw new Error("User not found.");
+    }
+
+    return {
+        user: {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+        },
+        tokens: {
+            accessToken: "",
+            refreshToken: "",
         },
     };
 };
