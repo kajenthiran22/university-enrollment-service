@@ -6,8 +6,8 @@ import { USER_ROLES } from "../constants/auth.constants";
 
 const router = Router();
 
-router.post("/", authenticate, authorize(USER_ROLES.ADMIN, USER_ROLES.LECTURER, ), studentController.createStudent);
-router.get("/", authenticate, authorize(USER_ROLES.ADMIN, USER_ROLES.LECTURER, USER_ROLES.STUDENT), studentController.getAllStudents);
+router.post("/", authenticate, authorize(USER_ROLES.ADMIN), studentController.createStudent);
+router.get("/", authenticate, authorize(USER_ROLES.ADMIN, USER_ROLES.LECTURER), studentController.getAllStudents);
 router.get("/:id", authenticate, authorize(USER_ROLES.ADMIN, USER_ROLES.LECTURER, USER_ROLES.STUDENT), studentController.getStudentById);
 router.put("/:id", authenticate, authorize(USER_ROLES.ADMIN), studentController.updateStudent);
 router.delete("/:id", authenticate, authorize(USER_ROLES.ADMIN), studentController.deleteStudent);
