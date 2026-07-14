@@ -1,11 +1,18 @@
 import * as lecturerRepository from "../repositories/lecturer.repository";
 import type { CreateLecturerRequest, UpdateLecturerRequest, LecturerDocument } from "../types/lecturer.types";
+import { AppError } from "../common/errors/app.error";
+import { ERROR_CODES } from "../constants/error.codes.constants";
+import { HTTP_STATUS } from "../constants/http.constants";
 
 export const createLecturer = async (userId: string, data: CreateLecturerRequest): Promise<LecturerDocument> => {
     const exists = await lecturerRepository.findLecturerByEmployeeId(data.employeeId);
 
     if (exists) {
-        throw new Error("Employee ID already exists.");
+        throw new AppError(
+            ERROR_CODES.LECTURER_ALREADY_EXISTS,
+            "Employee ID already exists.",
+            HTTP_STATUS.CONFLICT,
+        );
     }
 
     return lecturerRepository.createLecturer(userId, data);
