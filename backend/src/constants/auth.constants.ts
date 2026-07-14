@@ -16,11 +16,7 @@ export const USER_STATUS = {
   SUSPENDED: "suspended",
 } as const;
 
-export const USER_STATUS_VALUES = [
-  USER_STATUS.ACTIVE,
-  USER_STATUS.INACTIVE,
-  USER_STATUS.SUSPENDED,
-] as const;
+export const USER_STATUS_VALUES = Object.values(USER_STATUS);
 
 export const JWT = {
   ACCESS_TOKEN_EXPIRES_IN: "1m",
