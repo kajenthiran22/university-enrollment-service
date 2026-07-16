@@ -1,5 +1,6 @@
 import { CourseModel } from "../models/course.model";
 import type { CreateCourseRequest, UpdateCourseRequest, CourseDocument } from "../types/course.types";
+import type { UpdateQuery } from "mongoose";
 
 export const createCourse = async (data: CreateCourseRequest): Promise<CourseDocument> => {
     return CourseModel.create(data);
@@ -21,7 +22,7 @@ export const getCoursesByLecturer = async (lecturerId: string): Promise<CourseDo
     return CourseModel.find({ lecturerId });
 };
 
-export const updateCourse = async (id: string, data: UpdateCourseRequest): Promise<CourseDocument | null> => {
+export const updateCourse = async (id: string, data: UpdateQuery<CourseDocument>): Promise<CourseDocument | null> => {
     return CourseModel.findByIdAndUpdate(id, data, { new: true, runValidators: true });
 };
 
