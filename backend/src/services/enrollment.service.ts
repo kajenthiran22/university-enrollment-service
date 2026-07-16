@@ -138,7 +138,7 @@ export const getAllEnrollments = async () => {
     return enrollmentRepository.getAllEnrollments();
 };
 
-export const getStudentEnrollments = async (userId: string) => {
+export const getEnrollmentsByStudent = async (userId: string) => {
     const student = await studentRepository.findStudentByUserId(userId);
 
     if (!student) {
@@ -154,7 +154,7 @@ export const getStudentEnrollments = async (userId: string) => {
     );
 };
 
-export const getCourseEnrollments = async (courseId: string) => {
+export const getEnrollmentsByCourse = async (courseId: string) => {
     return enrollmentRepository.getEnrollmentsByCourse(
         courseId,
     );

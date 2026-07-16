@@ -5,7 +5,7 @@ import { ERROR_CODES } from "../constants/error.codes.constants";
 import { HTTP_STATUS } from "../constants/http.constants";
 
 export const createLecturer = async (userId: string, data: CreateLecturerRequest): Promise<LecturerDocument> => {
-    const exists = await lecturerRepository.findLecturerByEmployeeId(data.employeeId);
+    const exists = await lecturerRepository.findLecturerByUserId(userId);
 
     if (exists) {
         throw new AppError(
@@ -20,10 +20,6 @@ export const createLecturer = async (userId: string, data: CreateLecturerRequest
 
 export const getLecturerById = async (id: string): Promise<LecturerDocument | null> => {
     return lecturerRepository.findLecturerById(id);
-};
-
-export const getLecturerByUserId = async (userId: string): Promise<LecturerDocument | null> => {
-    return lecturerRepository.findLecturerByUserId(userId);
 };
 
 export const getAllLecturers = async (): Promise<LecturerDocument[]> => {

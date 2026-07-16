@@ -32,14 +32,16 @@ export const errorMiddleware = (error: Error, req: Request, res: Response, next:
         logger.warn({
             code: error.code,
             message: error.message,
+            status: error.httpStatus,
             path: req.originalUrl,
         });
 
-        res.status(error.statusCode).json({
+        res.status(error.httpStatus).json({
             success: false,
             error: {
                 code: error.code,
                 message: error.message,
+                status: error.httpStatus,
             },
         });
         return;
@@ -51,12 +53,12 @@ export const errorMiddleware = (error: Error, req: Request, res: Response, next:
         path: req.originalUrl,
     });
 
-    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
-        .json({
-            success: false,
-            error: {
-                code: ERROR_CODES.INTERNAL_ERROR,
-                message: "Internal server error.",
-            },
-        });
+    // res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+    //     .json({
+    //         success: false,
+    //         error: {
+    //             code: ERROR_CODES.INTERNAL_ERROR,
+    //             message: "Internal server error.",
+    //         },
+    //     });
 };
