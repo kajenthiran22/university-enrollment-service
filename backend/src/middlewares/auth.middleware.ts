@@ -2,14 +2,21 @@ import type { RequestHandler } from "express";
 import { verifyToken } from "../utils/jwt.util";
 import type { AuthenticatedRequest } from "../types/request.types";
 import { HTTP_STATUS } from "../constants/http.constants";
+import { AppError } from "../common/errors/app.error";
+import { ERROR_CODES } from "../constants/error.codes.constants";
 
 export const authenticate: RequestHandler = (req, res, next) => {
     const authenticatedReq = req as AuthenticatedRequest;
     const authorizationHeader = authenticatedReq.header("Authorization");
 
     if (!authorizationHeader?.startsWith("Bearer ")) {
-        res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: "Authentication required." });
-        return;
+        return next(
+            new AppError(
+                ERROR_CODES.UNAUTHORIZED,
+                "Authentication required.",
+                HTTP_STATUS.UNAUTHORIZED,
+            )
+        );
     }
 
     const token = authorizationHeader.substring(7);
@@ -19,6 +26,12 @@ export const authenticate: RequestHandler = (req, res, next) => {
         next();
     }
     catch {
-        res.status(HTTP_STATUS.UNAUTHORIZED).json({ message: "Invalid or expired token." });
+        return next(
+            new AppError(
+                ERROR_CODES.UNAUTHORIZED,
+                "Invalid or expired token.",
+                HTTP_STATUS.UNAUTHORIZED,
+            )
+        );
     }
 };

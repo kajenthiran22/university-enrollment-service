@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import * as enrollmentService from "../services/enrollment.service";
 import { HTTP_STATUS } from "../constants/http.constants";
+import { ApiResponse } from "../common/responses/api.response";
 
 export const enrollStudent = async (req: Request<{ courseId: string }>, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -8,7 +9,13 @@ export const enrollStudent = async (req: Request<{ courseId: string }>, res: Res
             req.user!.userId,
             req.params!.courseId,
         );
-        res.status(HTTP_STATUS.CREATED).json(enrollment);
+        res.status(HTTP_STATUS.CREATED).json(
+            new ApiResponse(
+                HTTP_STATUS.CREATED,
+                "Enrollment created successfully.",
+                enrollment,
+            ),
+        );
     }
     catch (error) {
         next(error);
@@ -21,7 +28,13 @@ export const withdrawStudent = async (req: Request<{ courseId: string }>, res: R
             req.user!.userId,
             req.params.courseId,
         );
-        res.status(HTTP_STATUS.OK).json(enrollment);
+        res.status(HTTP_STATUS.OK).json(
+            new ApiResponse(
+                HTTP_STATUS.OK,
+                "Enrollment withdrawn successfully.",
+                enrollment,
+            )
+        )
     }
     catch (error) {
         next(error);
@@ -31,19 +44,13 @@ export const withdrawStudent = async (req: Request<{ courseId: string }>, res: R
 export const getAllEnrollments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const enrollments = await enrollmentService.getAllEnrollments();
-        res.status(HTTP_STATUS.OK).json(enrollments);
-    }
-    catch (error) {
-        next(error);
-    }
-};
-
-export const getMyEnrollments = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-        const enrollments = await enrollmentService.getStudentEnrollments(
-            req.user!.userId,
+        res.status(HTTP_STATUS.OK).json(
+            new ApiResponse(
+                HTTP_STATUS.OK,
+                "Enrollments retrieved successfully.",
+                enrollments,
+            ),
         );
-        res.status(HTTP_STATUS.OK).json(enrollments);
     }
     catch (error) {
         next(error);
@@ -55,19 +62,49 @@ export const getEnrollmentById = async (req: Request<{ id: string }>, res: Respo
         const enrollment = await enrollmentService.getEnrollmentById(
             req.params.id,
         );
-        res.status(HTTP_STATUS.OK).json(enrollment);
+        res.status(HTTP_STATUS.OK).json(
+            new ApiResponse(
+                HTTP_STATUS.OK,
+                "Enrollment retrieved successfully.",
+                enrollment,
+            ),
+        );
     }
     catch (error) {
         next(error);
     }
 };
 
-export const getCourseEnrollments = async (req: Request<{ courseId: string }>, res: Response, next: NextFunction): Promise<void> => {
+export const getEnrollmentsByStudent = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const enrollments = await enrollmentService.getCourseEnrollments(
+        const enrollments = await enrollmentService.getEnrollmentsByStudent(
+            req.user!.userId,
+        );
+        res.status(HTTP_STATUS.OK).json(
+            new ApiResponse(
+                HTTP_STATUS.OK,
+                "Enrollments retrieved successfully.",
+                enrollments,
+            ),
+        );
+    }
+    catch (error) {
+        next(error);
+    }
+};
+
+export const getEnrollmentsByCourse = async (req: Request<{ courseId: string }>, res: Response, next: NextFunction): Promise<void> => {
+    try {
+        const enrollments = await enrollmentService.getEnrollmentsByCourse(
             req.params.courseId,
         );
-        res.status(HTTP_STATUS.OK).json(enrollments);
+        res.status(HTTP_STATUS.OK).json(
+            new ApiResponse(
+                HTTP_STATUS.OK,
+                "Enrollments retrieved successfully.",
+                enrollments,
+            ),
+        );
     }
     catch (error) {
         next(error);
@@ -76,10 +113,16 @@ export const getCourseEnrollments = async (req: Request<{ courseId: string }>, r
 
 export const deleteEnrollment = async (req: Request<{ id: string }>, res: Response, next: NextFunction): Promise<void> => {
     try {
-        await enrollmentService.deleteEnrollment(
+        const result = await enrollmentService.deleteEnrollment(
             req.params.id,
         );
-        res.status(HTTP_STATUS.NO_CONTENT).send();
+        res.status(HTTP_STATUS.OK).json(
+            new ApiResponse(
+                HTTP_STATUS.OK,
+                "Enrollments deleted successfully.",
+                result,
+            ),
+        );
     }
     catch (error) {
         next(error);

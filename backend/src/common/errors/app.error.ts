@@ -1,19 +1,20 @@
-import type { ErrorCode } from "./error.codes";
+import type { ErrorCode } from "../../types/error.codes.types";
+import type { HttpStatus } from "../../types/http.status.types"
 
 export class AppError extends Error {
-    public readonly statusCode: number;
+    public readonly httpStatus: HttpStatus;
     public readonly code: ErrorCode;
 
     constructor(
         code: ErrorCode,
         message: string,
-        statusCode: number,
+        httpStatus: HttpStatus,
     ) {
         super(message);
 
         this.name = "AppError";
         this.code = code;
-        this.statusCode = statusCode;
+        this.httpStatus = httpStatus;
 
         Error.captureStackTrace(
             this,

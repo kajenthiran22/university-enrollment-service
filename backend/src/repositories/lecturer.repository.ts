@@ -10,16 +10,10 @@ export const createLecturer = async (userId: string, data: CreateLecturerRequest
 
 export const findLecturerById = async (id: string): Promise<LecturerDocument | null> => {
     return LecturerModel.findById(id);
-
 };
 
 export const findLecturerByUserId = async (userId: string): Promise<LecturerDocument | null> => {
     return LecturerModel.findOne({ userId });
-
-};
-
-export const findLecturerByEmployeeId = async (employeeId: string): Promise<LecturerDocument | null> => {
-    return LecturerModel.findOne({ employeeId });
 };
 
 export const getAllLecturers = async (): Promise<LecturerDocument[]> => {

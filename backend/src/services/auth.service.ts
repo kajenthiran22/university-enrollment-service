@@ -1,14 +1,13 @@
-import { createUser, userExistsByEmail, findUserByEmail } from "../repositories/user.repository";
+import * as authRepository from "../repositories/auth.repository";
 import { comparePassword, hashPassword } from "../utils/password.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt.util";
 import type { AuthResponse, JwtPayload, RegisterRequest, LoginRequest } from "../types/auth.types";
-import { findUserById } from "../repositories/user.repository";
 import { AppError } from "../common/errors/app.error";
 import { ERROR_CODES } from "../constants/error.codes.constants";
 import { HTTP_STATUS } from "../constants/http.constants";
 
 export const register = async (data: RegisterRequest): Promise<AuthResponse> => {
-    const emailExists = await userExistsByEmail(data.email);
+    const emailExists = await authRepository.userExistsByEmail(data.email);
 
     if (emailExists) {
         throw new AppError(
@@ -22,7 +21,7 @@ export const register = async (data: RegisterRequest): Promise<AuthResponse> => 
         data.password
     );
 
-    const user = await createUser({
+    const user = await authRepository.createUser({
         email: data.email,
         password: hashedPassword,
         role: data.role
@@ -49,7 +48,7 @@ export const register = async (data: RegisterRequest): Promise<AuthResponse> => 
 };
 
 export const login = async (data: LoginRequest): Promise<AuthResponse> => {
-    const user = await findUserByEmail(data.email);
+    const user = await authRepository.findUserByEmail(data.email);
 
     if (!user) {
         throw new AppError(
@@ -88,30 +87,6 @@ export const login = async (data: LoginRequest): Promise<AuthResponse> => {
         tokens: {
             accessToken: generateAccessToken(payload),
             refreshToken: generateRefreshToken(payload),
-        },
-    };
-};
-
-export const getCurrentUser = async (payload: JwtPayload): Promise<AuthResponse> => {
-    const user = await findUserById(payload.userId);
-
-    if (!user) {
-        throw new AppError(
-            ERROR_CODES.USER_NOT_FOUND,
-            "User not found.",
-            HTTP_STATUS.NOT_FOUND,
-        );
-    }
-
-    return {
-        user: {
-            id: user.id,
-            email: user.email,
-            role: user.role,
-        },
-        tokens: {
-            accessToken: "",
-            refreshToken: "",
         },
     };
 };
