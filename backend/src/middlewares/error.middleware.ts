@@ -53,12 +53,13 @@ export const errorMiddleware = (error: Error, req: Request, res: Response, next:
         path: req.originalUrl,
     });
 
-    // res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
-    //     .json({
-    //         success: false,
-    //         error: {
-    //             code: ERROR_CODES.INTERNAL_ERROR,
-    //             message: "Internal server error.",
-    //         },
-    //     });
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR)
+        .json({
+            success: false,
+            error: {
+                code: ERROR_CODES.INTERNAL_ERROR,
+                message: "Internal server error.",
+                status: HTTP_STATUS.INTERNAL_SERVER_ERROR,
+            },
+        });
 };

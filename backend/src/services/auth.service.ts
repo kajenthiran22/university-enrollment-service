@@ -1,12 +1,15 @@
 import * as authRepository from "../repositories/auth.repository";
 import { comparePassword, hashPassword } from "../utils/password.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt.util";
-import type { AuthResponse, JwtPayload, RegisterRequest, LoginRequest } from "../types/auth.types";
+import type { AuthResponse, JwtPayload, StudentRegisterRequest, LecturerRegisterRequest, LoginRequest } from "../types/auth.types";
 import { AppError } from "../common/errors/app.error";
 import { ERROR_CODES } from "../constants/error.codes.constants";
 import { HTTP_STATUS } from "../constants/http.constants";
+import * as studentRepository from "../repositories/student.repository";
+import * as lecturerRepository from "../repositories/lecturer.repository";
+import { USER_ROLES, USER_STATUS } from "../constants/auth.constants";
 
-export const register = async (data: RegisterRequest): Promise<AuthResponse> => {
+export const studentRegister = async (data: StudentRegisterRequest): Promise<void> => {
     const emailExists = await authRepository.userExistsByEmail(data.email);
 
     if (emailExists) {
@@ -24,27 +27,44 @@ export const register = async (data: RegisterRequest): Promise<AuthResponse> => 
     const user = await authRepository.createUser({
         email: data.email,
         password: hashedPassword,
-        role: data.role
+        role: USER_ROLES.STUDENT,
+        status: USER_STATUS.PENDING,
     });
 
-    const payload: JwtPayload = {
-        userId: user.id,
-        email: user.email,
-        role: user.role,
-    };
+    await studentRepository.createStudent(user.id, {
+        registrationNumber: data.registrationNumber,
+        name: data.name,
+        dateOfBirth: data.dateOfBirth,
+    });
+};
 
-    return {
-        user: {
-            id: user.id,
-            email: user.email,
-            role: user.role,
-        },
+export const lecturerRegister = async (data: LecturerRegisterRequest): Promise<void> => {
+    const emailExists = await authRepository.userExistsByEmail(data.email);
 
-        tokens: {
-            accessToken: generateAccessToken(payload),
-            refreshToken: generateRefreshToken(payload),
-        },
-    };
+    if (emailExists) {
+        throw new AppError(
+            ERROR_CODES.EMAIL_ALREADY_EXISTS,
+            "Email already exists.",
+            HTTP_STATUS.CONFLICT,
+        );
+    }
+
+    const hashedPassword = await hashPassword(
+        data.password
+    );
+
+    const user = await authRepository.createUser({
+        email: data.email,
+        password: hashedPassword,
+        role: USER_ROLES.LECTURER,
+        status: USER_STATUS.PENDING,
+    });
+
+    await lecturerRepository.createLecturer(user.id, {
+        employeeId: data.employeeId,
+        name: data.name,
+        designation: data.designation,
+    });
 };
 
 export const login = async (data: LoginRequest): Promise<AuthResponse> => {
@@ -71,6 +91,14 @@ export const login = async (data: LoginRequest): Promise<AuthResponse> => {
         );
     }
 
+    if (user.status !== USER_STATUS.APPROVED) {
+        throw new AppError(
+            ERROR_CODES.ACCOUNT_NOT_APPROVED,
+            "Your account is awaiting administrator approval.",
+            HTTP_STATUS.FORBIDDEN,
+        );
+    }
+
     const payload: JwtPayload = {
         userId: user.id,
         email: user.email,
@@ -89,4 +117,8 @@ export const login = async (data: LoginRequest): Promise<AuthResponse> => {
             refreshToken: generateRefreshToken(payload),
         },
     };
+};
+
+export const logout = async (): Promise<void> => {
+    return;
 };
