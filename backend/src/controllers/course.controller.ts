@@ -51,9 +51,9 @@ export const getCourseById = async (req: Request<{ id: string }>, res: Response,
     }
 };
 
-export const getCoursesByLecturer = async (req: Request<{ lecturerId: string }>, res: Response, next: NextFunction): Promise<void> => {
+export const getCoursesByLecturer = async (req: Request<{ id: string }>, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const courses = await courseService.getCoursesByLecturer(req.params.lecturerId);
+        const courses = await courseService.getCoursesByLecturer(req.params.id);
         res.status(HTTP_STATUS.OK).json(
             new ApiResponse(
                 HTTP_STATUS.OK,

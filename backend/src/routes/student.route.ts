@@ -16,6 +16,6 @@ router.get("/:id", authenticate, authorize(USER_ROLES.ADMIN, USER_ROLES.LECTURER
 router.put("/:id", authenticate, authorize(USER_ROLES.ADMIN), validate(updateStudentSchema), studentController.updateStudent);
 router.delete("/:id", authenticate, authorize(USER_ROLES.ADMIN), validate(studentIdSchema), studentController.deleteStudent);
 
-router.get("/:id/enrollments", authenticate, authorize(USER_ROLES.ADMIN, USER_ROLES.LECTURER, USER_ROLES.STUDENT), validate(enrollmentIdSchema), enrollmentController.getEnrollmentsByStudent);
+router.get("/:id/enrollments", authenticate, authorize(USER_ROLES.ADMIN, USER_ROLES.LECTURER, USER_ROLES.STUDENT), validate(studentIdSchema), enrollmentController.getEnrollmentsByStudent);
 
 export default router;

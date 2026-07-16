@@ -8,8 +8,8 @@ import { enrollmentIdSchema } from "../validators/enrollment.validator";
 
 const router = Router();
 
-router.get("/", authenticate, authorize(USER_ROLES.ADMIN, USER_ROLES.LECTURER), validate(enrollmentIdSchema), enrollmentController.getAllEnrollments);
+router.get("/", authenticate, authorize(USER_ROLES.ADMIN, USER_ROLES.LECTURER), enrollmentController.getAllEnrollments);
 router.get("/:id", authenticate, authorize(USER_ROLES.ADMIN, USER_ROLES.LECTURER, USER_ROLES.STUDENT), validate(enrollmentIdSchema), enrollmentController.getEnrollmentById);
-router.delete("/:id", authenticate, authorize(USER_ROLES.ADMIN), enrollmentController.deleteEnrollment);
+router.delete("/:id", authenticate, authorize(USER_ROLES.ADMIN), validate(enrollmentIdSchema), enrollmentController.deleteEnrollment);
 
 export default router;
