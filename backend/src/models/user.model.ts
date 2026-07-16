@@ -28,7 +28,7 @@ const userSchema = new Schema<User>(
         status: {
             type: String,
             enum: USER_STATUS_VALUES,
-            default: USER_STATUS.ACTIVE,
+            default: USER_STATUS.PENDING,
         },
     },
     {

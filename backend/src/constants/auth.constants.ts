@@ -11,9 +11,9 @@ export const USER_ROLE_VALUES = [
 ] as const;
 
 export const USER_STATUS = {
-  ACTIVE: "active",
-  INACTIVE: "inactive",
-  SUSPENDED: "suspended",
+  PENDING: "PENDING",
+  APPROVED: "APPROVED",
+  REJECTED: "REJECTED",
 } as const;
 
 export const USER_STATUS_VALUES = Object.values(USER_STATUS);

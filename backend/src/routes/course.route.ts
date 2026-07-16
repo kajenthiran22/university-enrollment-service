@@ -18,8 +18,8 @@ router.delete("/:id", authenticate, authorize(USER_ROLES.ADMIN), validate(course
 
 router.get("/lecturer/:id", authenticate, authorize(USER_ROLES.ADMIN, USER_ROLES.LECTURER), validate(lecturerIdSchema), courseController.getCoursesByLecturer);
 
-router.post("/:id/enrollments", authenticate, authorize(USER_ROLES.ADMIN, USER_ROLES.STUDENT), validate(courseIdSchema), enrollmentController.enrollStudent);
-router.delete("/:id/enrollments", authenticate, authorize(USER_ROLES.ADMIN, USER_ROLES.STUDENT), validate(courseIdSchema), enrollmentController.withdrawStudent);
+router.post("/:id/enrollments", authenticate, authorize(USER_ROLES.STUDENT), validate(courseIdSchema), enrollmentController.enrollStudent);
+router.delete("/:id/enrollments", authenticate, authorize(USER_ROLES.STUDENT), validate(courseIdSchema), enrollmentController.withdrawStudent);
 router.get("/:id/students", authenticate, authorize(USER_ROLES.ADMIN, USER_ROLES.LECTURER), validate(courseIdSchema), enrollmentController.getEnrollmentsByCourse);
 
 export default router;

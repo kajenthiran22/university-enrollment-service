@@ -1,17 +1,5 @@
 import { z } from "zod";
 
-export const createStudentSchema = z.object({
-    body: z.object({
-        registrationNumber: z.string().min(1, "Registration number is required."),
-        name: z.string().min(1, "Name is required."),
-        dateOfBirth: z.coerce.date("Invalid date of birth."),
-    }),
-
-    params: z.object({}),
-
-    query: z.object({}),
-});
-
 export const updateStudentSchema = z.object({
     body: z.object({
         registrationNumber: z.string().optional(),

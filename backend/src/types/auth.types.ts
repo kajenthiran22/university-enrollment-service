@@ -6,11 +6,24 @@ export interface JwtPayload {
     role: User["role"];
 }
 
-export interface RegisterRequest {
+export interface StudentRegisterRequest {
     email: string;
     password: string;
     confirmPassword: string;
-    role: User["role"];
+
+    registrationNumber: string;
+    name: string;
+    dateOfBirth: Date;
+}
+
+export interface LecturerRegisterRequest {
+    email: string;
+    password: string;
+    confirmPassword: string;
+
+    employeeId: string;
+    name: string;
+    designation: string;
 }
 
 export interface LoginRequest {

@@ -1,10 +1,6 @@
 import { UserModel } from "../models/user.model";
 import type { User, UserDocument } from "../types/user.types";
 
-export const findUserById = async (id: string): Promise<UserDocument | null> => {
-    return UserModel.findById(id).exec();
-};
-
 export const findUserByEmail = async (email: string): Promise<UserDocument | null> => {
     return UserModel.findOne({ email }).select("+password").exec();
 };
