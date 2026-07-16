@@ -65,7 +65,7 @@ export const enrollStudent = async (userId: string, courseId: string) => {
     await courseRepository.updateCourse(
         course.id,
         {
-            enrolledCount: course.enrolledCount + 1,
+            $inc: { enrolledCount: +1 },
         },
     );
 
@@ -123,7 +123,7 @@ export const withdrawStudent = async (userId: string, courseId: string) => {
     await courseRepository.updateCourse(
         course.id,
         {
-            enrolledCount: course.enrolledCount - 1,
+            $inc: { enrolledCount: -1 },
         },
     );
 
