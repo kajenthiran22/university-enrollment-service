@@ -25,6 +25,7 @@ export const register = async (data: RegisterRequest): Promise<AuthResponse> => 
     const user = await createUser({
         email: data.email,
         password: hashedPassword,
+        role: data.role
     });
 
     const payload: JwtPayload = {

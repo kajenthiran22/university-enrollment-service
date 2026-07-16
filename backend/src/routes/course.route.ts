@@ -6,6 +6,7 @@ import { authorize } from "../middlewares/role.middleware";
 import { USER_ROLES } from "../constants/auth.constants";
 import { validate } from "../middlewares/validation.middleware";
 import { createCourseSchema, updateCourseSchema, courseIdSchema } from "../validators/course.validator";
+import { lecturerIdSchema } from "../validators/lecturer.validator";
 
 const router = Router();
 
@@ -15,10 +16,10 @@ router.get("/:id", authenticate, authorize(USER_ROLES.ADMIN, USER_ROLES.LECTURER
 router.put("/:id", authenticate, authorize(USER_ROLES.ADMIN), validate(updateCourseSchema), courseController.updateCourse);
 router.delete("/:id", authenticate, authorize(USER_ROLES.ADMIN), validate(courseIdSchema), courseController.deleteCourse);
 
-router.get("/lecturer/:lecturerId", authenticate, authorize(USER_ROLES.ADMIN, USER_ROLES.LECTURER), courseController.getCoursesByLecturer);
+router.get("/lecturer/:id", authenticate, authorize(USER_ROLES.ADMIN, USER_ROLES.LECTURER), validate(lecturerIdSchema), courseController.getCoursesByLecturer);
 
-router.post("/:courseId/enrollments", authenticate, authorize(USER_ROLES.STUDENT), validate(courseIdSchema), enrollmentController.enrollStudent);
-router.delete("/:courseId/enrollments", authenticate, authorize(USER_ROLES.STUDENT), validate(courseIdSchema), enrollmentController.withdrawStudent);
-router.get("/:courseId/students", authenticate, authorize(USER_ROLES.LECTURER), validate(courseIdSchema), enrollmentController.getCourseEnrollments);
+router.post("/:id/enrollments", authenticate, authorize(USER_ROLES.STUDENT), validate(courseIdSchema), enrollmentController.enrollStudent);
+router.delete("/:id/enrollments", authenticate, authorize(USER_ROLES.STUDENT), validate(courseIdSchema), enrollmentController.withdrawStudent);
+router.get("/:id/students", authenticate, authorize(USER_ROLES.LECTURER), validate(courseIdSchema), enrollmentController.getCourseEnrollments);
 
 export default router;
