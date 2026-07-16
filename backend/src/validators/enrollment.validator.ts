@@ -6,7 +6,7 @@ export const enrollmentIdSchema = z.object({
     }),
 
     params: z.object({
-        // id: z.string().min(1, "Enrollment id is required."),
+        id: z.string().min(1, "Enrollment id is required."),
     }),
 
     query: z.object({}),

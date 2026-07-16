@@ -19,10 +19,10 @@ export const USER_STATUS = {
 export const USER_STATUS_VALUES = Object.values(USER_STATUS);
 
 export const JWT = {
-  ACCESS_TOKEN_EXPIRES_IN: "1m",
+  ACCESS_TOKEN_EXPIRES_IN: "15m",
   REFRESH_TOKEN_EXPIRES_IN: "1d"
 } as const;
 
 export const HASHING = {
-  SALT_ROUNDS: "12"
+  SALT_ROUNDS: "10"
 } as const;
