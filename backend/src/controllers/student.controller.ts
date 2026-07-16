@@ -3,9 +3,9 @@ import * as studentService from "../services/student.service";
 import { HTTP_STATUS } from "../constants/http.constants";
 import { ApiResponse } from "../common/responses/api.response";
 
-export const createStudent = async (req: Request<{ userId: string }>, res: Response, next: NextFunction): Promise<void> => {
+export const createStudent = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-        const student = await studentService.createStudent(req.params.userId, req.body);
+        const student = await studentService.createStudent(req.body.userId, req.body);
         res.status(HTTP_STATUS.CREATED).json(
             new ApiResponse(
                 HTTP_STATUS.CREATED,

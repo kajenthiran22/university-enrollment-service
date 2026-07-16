@@ -3,11 +3,11 @@ import * as enrollmentService from "../services/enrollment.service";
 import { HTTP_STATUS } from "../constants/http.constants";
 import { ApiResponse } from "../common/responses/api.response";
 
-export const enrollStudent = async (req: Request<{ courseId: string }>, res: Response, next: NextFunction): Promise<void> => {
+export const enrollStudent = async (req: Request<{ id: string }>, res: Response, next: NextFunction): Promise<void> => {
     try {
         const enrollment = await enrollmentService.enrollStudent(
             req.user!.userId,
-            req.params!.courseId,
+            req.params!.id,
         );
         res.status(HTTP_STATUS.CREATED).json(
             new ApiResponse(
@@ -22,11 +22,11 @@ export const enrollStudent = async (req: Request<{ courseId: string }>, res: Res
     }
 };
 
-export const withdrawStudent = async (req: Request<{ courseId: string }>, res: Response, next: NextFunction): Promise<void> => {
+export const withdrawStudent = async (req: Request<{ id: string }>, res: Response, next: NextFunction): Promise<void> => {
     try {
         const enrollment = await enrollmentService.withdrawStudent(
             req.user!.userId,
-            req.params.courseId,
+            req.params.id,
         );
         res.status(HTTP_STATUS.OK).json(
             new ApiResponse(
@@ -75,10 +75,10 @@ export const getEnrollmentById = async (req: Request<{ id: string }>, res: Respo
     }
 };
 
-export const getEnrollmentsByStudent = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export const getEnrollmentsByStudent = async (req: Request<{ id: string }>, res: Response, next: NextFunction): Promise<void> => {
     try {
         const enrollments = await enrollmentService.getEnrollmentsByStudent(
-            req.user!.userId,
+            req.params.id,
         );
         res.status(HTTP_STATUS.OK).json(
             new ApiResponse(
@@ -93,10 +93,10 @@ export const getEnrollmentsByStudent = async (req: Request, res: Response, next:
     }
 };
 
-export const getEnrollmentsByCourse = async (req: Request<{ courseId: string }>, res: Response, next: NextFunction): Promise<void> => {
+export const getEnrollmentsByCourse = async (req: Request<{ id: string }>, res: Response, next: NextFunction): Promise<void> => {
     try {
         const enrollments = await enrollmentService.getEnrollmentsByCourse(
-            req.params.courseId,
+            req.params.id,
         );
         res.status(HTTP_STATUS.OK).json(
             new ApiResponse(
