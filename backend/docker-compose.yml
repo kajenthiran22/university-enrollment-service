@@ -1,0 +1,62 @@
+services:
+
+  api:
+    container_name: university-enrollment-service-api
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    ports:
+      - "3000:3000"
+
+    env_file:
+      - .env
+
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      MONGODB_URI: mongodb://mongodb:27017/university_enrollment_service
+
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+    restart: unless-stopped
+
+    networks:
+      - university-network
+
+
+  mongodb:
+    container_name: university-enrollment-service-mongodb
+
+    image: mongo:8
+
+    ports:
+      - "27017:27017"
+
+    environment:
+      MONGO_INITDB_DATABASE: university_enrollment_service
+
+    volumes:
+      - mongodb_data:/data/db
+
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+    restart: unless-stopped
+
+    networks:
+      - university-network
+
+volumes:
+  mongodb_data:
+
+networks:
+  university-network:
+    driver: bridge
