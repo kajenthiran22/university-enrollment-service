@@ -1,0 +1,25 @@
+node_modules
+dist
+
+# Ignore all .env files
+.env
+.env.*
+!.env.example
+
+postman
+seed-data
+
+.git
+.gitignore
+
+tests
+playwright-report
+test-results
+jest.config.ts
+playwright.config.ts
+
+Dockerfile
+docker-compose.yml
+
+*.md
+!README.md
