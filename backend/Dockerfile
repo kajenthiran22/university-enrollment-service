@@ -24,6 +24,8 @@ RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
 
+COPY --from=builder /app/openapi.yaml ./openapi.yaml
+
 EXPOSE 3000
 
 # Start
