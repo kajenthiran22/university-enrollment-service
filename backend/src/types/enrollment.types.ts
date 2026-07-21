@@ -22,4 +22,6 @@ export interface CreateEnrollmentRequest {
 
 export interface UpdateEnrollmentRequest {
     status?: typeof ENROLLMENT_STATUS_VALUES[number];
+    enrolledAt: Date;
+    withdrawnAt?: Date;
 }

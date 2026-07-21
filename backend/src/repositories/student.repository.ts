@@ -1,3 +1,4 @@
+import type { ClientSession } from "mongoose";
 import { StudentModel } from "../models/student.model";
 import type { StudentDocument, CreateStudentRequest, UpdateStudentRequest } from "../types/student.types";
 
@@ -12,8 +13,14 @@ export const findStudentById = async (id: string): Promise<StudentDocument | nul
     return StudentModel.findById(id);
 };
 
-export const findStudentByUserId = async (userId: string): Promise<StudentDocument | null> => {
-    return StudentModel.findOne({ userId });
+export const findStudentByUserId = async (userId: string, session?: ClientSession): Promise<StudentDocument | null> => {
+    const query = StudentModel.findOne({ userId });
+
+    if (session) {
+        query.session(session);
+    }
+
+    return query;
 };
 
 export const getAllStudents = async (): Promise<StudentDocument[]> => {

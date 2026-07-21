@@ -1,13 +1,19 @@
 import { CourseModel } from "../models/course.model";
 import type { CreateCourseRequest, UpdateCourseRequest, CourseDocument } from "../types/course.types";
-import type { UpdateQuery } from "mongoose";
+import type { ClientSession, UpdateQuery } from "mongoose";
 
 export const createCourse = async (data: CreateCourseRequest): Promise<CourseDocument> => {
     return CourseModel.create(data);
 };
 
-export const findCourseById = async (id: string): Promise<CourseDocument | null> => {
-    return CourseModel.findById(id).populate("lecturerId");
+export const findCourseById = async (id: string, session?: ClientSession): Promise<CourseDocument | null> => {
+    const query = CourseModel.findById(id).populate("lecturerId");
+
+    if (session) {
+        query.session(session);
+    }
+
+    return query;
 };
 
 export const findCourseByCode = async (courseCode: string): Promise<CourseDocument | null> => {
@@ -22,8 +28,14 @@ export const getCoursesByLecturer = async (lecturerId: string): Promise<CourseDo
     return CourseModel.find({ lecturerId });
 };
 
-export const updateCourse = async (id: string, data: UpdateQuery<CourseDocument>): Promise<CourseDocument | null> => {
-    return CourseModel.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+export const updateCourse = async (id: string, data: UpdateQuery<CourseDocument>, session?: ClientSession): Promise<CourseDocument | null> => {
+    const query = CourseModel.findByIdAndUpdate(id, data, { new: true, runValidators: true });
+
+    if (session) {
+        query.session(session);
+    }
+
+    return query;
 };
 
 export const deleteCourse = async (id: string): Promise<CourseDocument | null> => {

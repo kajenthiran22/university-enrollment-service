@@ -4,130 +4,190 @@ import * as courseRepository from "../repositories/course.repository";
 import { AppError } from "../common/errors/app.error";
 import { ERROR_CODES } from "../constants/error.codes.constants";
 import { HTTP_STATUS } from "../constants/http.constants";
+import mongoose from "mongoose";
 
 export const enrollStudent = async (userId: string, courseId: string) => {
-    const student = await studentRepository.findStudentByUserId(userId);
+    const session = await mongoose.startSession();
 
-    if (!student) {
-        throw new AppError(
-            ERROR_CODES.STUDENT_NOT_FOUND,
-            "Student not found.",
-            HTTP_STATUS.NOT_FOUND,
+    try {
+        session.startTransaction();
+
+        const student = await studentRepository.findStudentByUserId(userId, session);
+
+        if (!student) {
+            throw new AppError(
+                ERROR_CODES.STUDENT_NOT_FOUND,
+                "Student not found.",
+                HTTP_STATUS.NOT_FOUND,
+            );
+        }
+
+        const course = await courseRepository.findCourseById(courseId, session);
+
+        if (!course) {
+            throw new AppError(
+                ERROR_CODES.COURSE_NOT_FOUND,
+                "Course not found.",
+                HTTP_STATUS.NOT_FOUND,
+            );
+        }
+
+        if (!course.enrollmentOpen) {
+            throw new AppError(
+                ERROR_CODES.COURSE_CLOSED,
+                "Course enrollment is closed.",
+                HTTP_STATUS.CONFLICT,
+            );
+        }
+
+        if (course.enrolledCount >= course.capacity) {
+            throw new AppError(
+                ERROR_CODES.COURSE_FULL,
+                "Course capacity has been reached.",
+                HTTP_STATUS.CONFLICT,
+            );
+        }
+
+        const existingEnrollment = await enrollmentRepository.findEnrollment(
+            student.id,
+            course.id,
+            session,
         );
-    }
 
-    const course = await courseRepository.findCourseById(courseId);
+        if (existingEnrollment) {
+            if (existingEnrollment.status === "active") {
+                throw new AppError(
+                    ERROR_CODES.ALREADY_ENROLLED,
+                    "Student is already enrolled in this course.",
+                    HTTP_STATUS.CONFLICT,
+                );
+            }
 
-    if (!course) {
-        throw new AppError(
-            ERROR_CODES.COURSE_NOT_FOUND,
-            "Course not found.",
-            HTTP_STATUS.NOT_FOUND,
+            const enrollment = await enrollmentRepository.updateEnrollment(
+                existingEnrollment.id,
+                {
+                    status: "active",
+                    enrolledAt: new Date(),
+                },
+                session,
+            );
+
+            await courseRepository.updateCourse(
+                course.id,
+                {
+                    $inc: { enrolledCount: 1 },
+                },
+                session,
+            );
+
+            await session.commitTransaction();
+
+            return enrollment;
+        }
+
+        const enrollment = await enrollmentRepository.createEnrollment(
+            {
+                studentId: student.id,
+                courseId: course.id,
+                status: "active",
+                enrolledAt: new Date(),
+            },
+            session,
         );
-    }
 
-    if (!course.enrollmentOpen) {
-        throw new AppError(
-            ERROR_CODES.COURSE_CLOSED,
-            "Course enrollment is closed.",
-            HTTP_STATUS.CONFLICT,
+        await courseRepository.updateCourse(
+            course.id,
+            {
+                $inc: { enrolledCount: 1 },
+            },
+            session,
         );
+
+        await session.commitTransaction();
+
+        return enrollment;
+    } catch (error) {
+        await session.abortTransaction();
+        throw error;
+    } finally {
+        await session.endSession();
     }
-
-    if (course.enrolledCount >= course.capacity) {
-        throw new AppError(
-            ERROR_CODES.COURSE_FULL,
-            "Course capacity has been reached.",
-            HTTP_STATUS.CONFLICT,
-        );
-    }
-
-    const existingEnrollment = await enrollmentRepository.findEnrollment(
-        student.id,
-        course.id,
-    );
-
-    if (existingEnrollment && existingEnrollment.status === "active") {
-        throw new AppError(
-            ERROR_CODES.ALREADY_ENROLLED,
-            "Student is already enrolled in this course.",
-            HTTP_STATUS.CONFLICT,
-        );
-    }
-
-    const enrollment = await enrollmentRepository.createEnrollment({
-        studentId: student.id,
-        courseId: course.id,
-        status: "active",
-        enrolledAt: new Date(),
-    });
-
-    await courseRepository.updateCourse(
-        course.id,
-        {
-            $inc: { enrolledCount: +1 },
-        },
-    );
-
-    return enrollment;
 };
 
 export const withdrawStudent = async (userId: string, courseId: string) => {
-    const student = await studentRepository.findStudentByUserId(userId);
+    const session = await mongoose.startSession();
 
-    if (!student) {
-        throw new AppError(
-            ERROR_CODES.STUDENT_NOT_FOUND,
-            "Student not found.",
-            HTTP_STATUS.NOT_FOUND,
-        );
-    }
+    try {
+        session.startTransaction();
 
-    const course = await courseRepository.findCourseById(courseId);
+        const student = await studentRepository.findStudentByUserId(userId, session);
 
-    if (!course) {
-        throw new AppError(
-            ERROR_CODES.COURSE_NOT_FOUND,
-            "Course not found.",
-            HTTP_STATUS.NOT_FOUND,
-        );
-    }
+        if (!student) {
+            throw new AppError(
+                ERROR_CODES.STUDENT_NOT_FOUND,
+                "Student not found.",
+                HTTP_STATUS.NOT_FOUND,
+            );
+        }
 
-    const enrollment = await enrollmentRepository.findEnrollment(
-        student.id,
-        course.id,
-    );
+        const course = await courseRepository.findCourseById(courseId, session);
 
-    if (!enrollment) {
-        throw new AppError(
-            ERROR_CODES.ENROLLMENT_NOT_FOUND,
-            "Enrollment not found.",
-            HTTP_STATUS.NOT_FOUND,
-        );
-    }
+        if (!course) {
+            throw new AppError(
+                ERROR_CODES.COURSE_NOT_FOUND,
+                "Course not found.",
+                HTTP_STATUS.NOT_FOUND,
+            );
+        }
 
-    if (enrollment.status === "withdrawn") {
-        throw new AppError(
-            ERROR_CODES.ALREADY_WITHDRAWN,
-            "Student already withdrew from this course.",
-            HTTP_STATUS.CONFLICT,
-        );
-    }
-
-    const updatedEnrollment =
-        await enrollmentRepository.withdrawEnrollment(
+        const enrollment = await enrollmentRepository.findEnrollment(
             student.id,
             course.id,
+            session,
         );
 
-    await courseRepository.updateCourse(
-        course.id,
-        {
-            $inc: { enrolledCount: -1 },
-        },
-    );
+        if (!enrollment) {
+            throw new AppError(
+                ERROR_CODES.ENROLLMENT_NOT_FOUND,
+                "Enrollment not found.",
+                HTTP_STATUS.NOT_FOUND,
+            );
+        }
 
-    return updatedEnrollment;
+        if (enrollment.status === "withdrawn") {
+            throw new AppError(
+                ERROR_CODES.ALREADY_WITHDRAWN,
+                "Student already withdrew from this course.",
+                HTTP_STATUS.CONFLICT,
+            );
+        }
+
+        const updatedEnrollment =
+            await enrollmentRepository.withdrawEnrollment(
+                student.id,
+                course.id,
+                session,
+            );
+
+        await courseRepository.updateCourse(
+            course.id,
+            {
+                $inc: { enrolledCount: -1 },
+            },
+            session,
+        );
+
+        await session.commitTransaction();
+
+        return updatedEnrollment;
+    }
+    catch (error) {
+        await session.abortTransaction();
+        throw error;
+    }
+    finally {
+        await session.endSession();
+    }
 };
 
 export const getEnrollmentById = async (id: string) => {
