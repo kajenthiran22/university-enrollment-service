@@ -1,0 +1,828 @@
+openapi: 3.0.0
+info:
+  title: University Enrollment Service API
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000/api/v1
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Enter JWT access token
+
+paths:
+  /auth/register/student:
+    post:
+      summary: Register Student
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - confirmPassword
+                - registrationNumber
+                - name
+                - dateOfBirth
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: student@example.com
+                password:
+                  type: string
+                  format: password
+                  example: Password123
+                confirmPassword:
+                  type: string
+                  format: password
+                  example: Password123
+                registrationNumber:
+                  type: string
+                  example: STU001
+                name:
+                  type: string
+                  example: Example Student
+                dateOfBirth:
+                  type: string
+                  format: date
+                  example: 2000-01-01
+      responses:
+        "201":
+          description: Student registered successfully
+        "409":
+          description: Email already exists
+        "422":
+          description: Validation error
+
+  /auth/register/lecturer:
+    post:
+      summary: Register Lecturer
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+                - confirmPassword
+                - employeeId
+                - name
+                - designation
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: lecturer@example.com
+                password:
+                  type: string
+                  format: password
+                  example: Password123
+                confirmPassword:
+                  type: string
+                  format: password
+                  example: Password123
+                employeeId:
+                  type: string
+                  example: LEC123
+                name:
+                  type: string
+                  example: Example Student
+                designation:
+                  type: string
+                  example: Senior Lecturer
+      responses:
+        "201":
+          description: Lecturer registered successfully
+        "409":
+          description: Email already exists
+        "422":
+          description: Validation error
+
+  /auth/login:
+    post:
+      summary: User Login
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: lecturer@example.com
+                password:
+                  type: string
+                  format: password
+                  example: Password123
+      responses:
+        "200":
+          description: User logged in successfully
+        "401":
+          description: Invalid email or password
+        "403":
+          description: Your account is awaiting administrator approval
+        "422":
+          description: Validation error
+
+  /auth/logout:
+    post:
+      summary: User Logout
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: User logged out successfully
+        "401":
+          description: Authentication required
+
+  /admin/pending:
+    get:
+      summary: Retrieve pending approval users
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Pending users retrieved successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+
+  /admin/{id}/approve:
+    patch:
+      summary: Approve pending user account
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: string
+            example: 65f123abc456
+      responses:
+        "200":
+          description: User approved successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+        "404":
+          description: User not found
+        "422":
+          description: Validation error
+
+  /admin/{id}/reject:
+    patch:
+      summary: Reject pending user account
+      tags:
+        - Admin
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: string
+            example: 65f123abc456
+      responses:
+        "200":
+          description: User rejected successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+        "404":
+          description: User not found
+        "422":
+          description: Validation error
+
+  /student:
+    get:
+      summary: Retrieve students
+      tags:
+        - Student
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Students retrieved successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+
+  /student/{id}:
+    get:
+      summary: Retrieve student by id
+      tags:
+        - Student
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: string
+            example: 65f123abc456
+      responses:
+        "200":
+          description: Student retrieved successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+        "404":
+          description: Student not found
+        "422":
+          description: Validation error
+
+    put:
+      summary: Update student by id
+      tags:
+        - Student
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: string
+            example: 65f123abc456
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - registrationNumber
+                - name
+                - dateOfBirth
+              properties:
+                registrationNumber:
+                  type: string
+                  example: STU001
+                name:
+                  type: string
+                  example: Example Student
+                dateOfBirth:
+                  type: string
+                  format: date
+                  example: 2000-01-01
+      responses:
+        "200":
+          description: Student updated successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+        "404":
+          description: Student not found
+        "422":
+          description: Validation error
+
+    delete:
+      summary: Delete student by id
+      tags:
+        - Student
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: string
+            example: 65f123abc456
+      responses:
+        "200":
+          description: Student deleted successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+        "404":
+          description: Student not found
+        "422":
+          description: Validation error
+
+  /student/{id}/enrollments:
+    get:
+      summary: Retrieve enrollments by student id
+      tags:
+        - Student
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: string
+            example: 65f123abc456
+      responses:
+        "200":
+          description: Enrollments retrieved successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+        "404":
+          description: Student not found
+        "422":
+          description: Validation error
+
+  /lecturer:
+    get:
+      summary: Retrieve lecturers
+      tags:
+        - Lecturer
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Lecturers retrieved successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+
+  /lecturer/{id}:
+    get:
+      summary: Retrieve lecturer by id
+      tags:
+        - Lecturer
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: string
+            example: 65f123abc456
+      responses:
+        "200":
+          description: Lecturer retrieved successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+        "404":
+          description: Lecturer not found
+        "422":
+          description: Validation error
+
+    put:
+      summary: Update lecturer by id
+      tags:
+        - Lecturer
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: string
+            example: 65f123abc456
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - employeeId
+                - name
+                - designation
+              properties:
+                employeeId:
+                  type: string
+                  example: LEC123
+                name:
+                  type: string
+                  example: Example Student
+                designation:
+                  type: string
+                  example: Senior Lecturer
+      responses:
+        "200":
+          description: Lecturer updated successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+        "404":
+          description: Lecturer not found
+        "422":
+          description: Validation error
+
+    delete:
+      summary: Delete lecturer by id
+      tags:
+        - Lecturer
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: string
+            example: 65f123abc456
+      responses:
+        "200":
+          description: Lecturer deleted successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+        "404":
+          description: Lecturer not found
+        "422":
+          description: Validation error
+
+  /enrollment:
+    get:
+      summary: Retrieve enrollments
+      tags:
+        - Enrollment
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Enrollments retrieved successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+
+  /enrollment/{id}:
+    get:
+      summary: Retrieve enrollment by id
+      tags:
+        - Enrollment
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Enrollment ID
+          schema:
+            type: string
+            example: 65f123abc456
+      responses:
+        "200":
+          description: Enrollment retrieved successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+        "404":
+          description: Enrollment not found
+        "422":
+          description: Validation error
+
+    delete:
+      summary: Delete enrollment by id
+      tags:
+        - Enrollment
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Enrollment ID
+          schema:
+            type: string
+            example: 65f123abc456
+      responses:
+        "200":
+          description: Enrollment deleted successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+        "404":
+          description: Enrollment not found
+        "422":
+          description: Validation error
+
+  /course:
+    post:
+      summary: Register Course
+      tags:
+        - Course
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - courseCode
+                - title
+                - credits
+                - lecturerId
+                - capacity
+                - enrollmentOpen
+              properties:
+                courseCode:
+                  type: string
+                  example: CO123
+                title:
+                  type: string
+                  example: Computer Science
+                credits:
+                  type: number
+                  example: 3
+                lecturerId:
+                  type: string
+                  example: LEC001
+                capacity:
+                  type: number
+                  example: 50
+                enrollmentOpen:
+                  type: boolean
+                  example: true
+      responses:
+        "201":
+          description: Course registered successfully
+        "409":
+          description: Course code already exists
+        "422":
+          description: Validation error
+
+    get:
+      summary: Retrieve courses
+      tags:
+        - Course
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Courses retrieved successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+
+  /course/{id}:
+    get:
+      summary: Retrieve course by id
+      tags:
+        - Course
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Course ID
+          schema:
+            type: string
+            example: 65f123abc456
+      responses:
+        "200":
+          description: Course retrieved successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+        "404":
+          description: Course not found
+        "422":
+          description: Validation error
+
+    put:
+      summary: Update course by id
+      tags:
+        - Course
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Course ID
+          schema:
+            type: string
+            example: 65f123abc456
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - courseCode
+                - title
+                - credits
+                - lecturerId
+                - capacity
+                - enrollmentOpen
+              properties:
+                courseCode:
+                  type: string
+                  example: CO123
+                title:
+                  type: string
+                  example: Computer Science
+                credits:
+                  type: number
+                  example: 3
+                lecturerId:
+                  type: string
+                  example: LEC001
+                capacity:
+                  type: number
+                  example: 50
+                enrollmentOpen:
+                  type: boolean
+                  example: true
+      responses:
+        "200":
+          description: Course updated successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+        "404":
+          description: Course not found
+        "422":
+          description: Validation error
+
+    delete:
+      summary: Delete course by id
+      tags:
+        - Course
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Course ID
+          schema:
+            type: string
+            example: 65f123abc456
+      responses:
+        "200":
+          description: Course deleted successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+        "404":
+          description: Course not found
+        "422":
+          description: Validation error
+
+  /course/lecturer/{id}:
+    get:
+      summary: Retrieve courses by lecturer
+      tags:
+        - Course
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: User ID
+          schema:
+            type: string
+            example: 65f123abc456
+      responses:
+        "200":
+          description: Courses retrieved successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+        "404":
+          description: Lecturer not found
+        "422":
+          description: Validation error
+
+  /course/{id}/enrollments:
+    post:
+      summary: Enroll course by student
+      tags:
+        - Course
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Course ID
+          schema:
+            type: string
+            example: 65f123abc456
+      responses:
+        "201":
+          description: Enrollment created successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+        "409":
+          description: Student already enrolled
+        "422":
+          description: Validation error
+
+    delete:
+      summary: Withdraw course by student
+      tags:
+        - Course
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Course ID
+          schema:
+            type: string
+            example: 65f123abc456
+      responses:
+        "200":
+          description: Enrollment withdrawn successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+        "404":
+          description: Enrollment not found
+        "409":
+          description: Student already withdrew
+        "422":
+          description: Validation error
+
+  /course/{id}/students:
+    get:
+      summary: Retrieve enrollments by course
+      tags:
+        - Course
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Course ID
+          schema:
+            type: string
+            example: 65f123abc456
+      responses:
+        "200":
+          description: Enrollments retrieved successfully
+        "401":
+          description: Authentication required
+        "403":
+          description: Access denied
+        "422":
+          description: Validation error
