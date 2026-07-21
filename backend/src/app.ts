@@ -8,12 +8,18 @@ import "./types/express.types";
 import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 import path from "path";
+import helmet from "helmet";
+import { globalRateLimiter } from "./middlewares/rate-limit.middleware";
 
 const app = express();
 
 const swaggerDocument = YAML.load(
     path.join(process.cwd(), "openapi.yaml"),
 );
+
+app.use(helmet());
+
+app.use(globalRateLimiter);
 
 app.use(express.json());
 
