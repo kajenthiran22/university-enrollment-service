@@ -58,7 +58,7 @@ export const logout = async (req: Request, res: Response, next: NextFunction): P
         res.status(HTTP_STATUS.OK).json(
             new ApiResponse(
                 HTTP_STATUS.OK,
-                "Logged out successfully.",
+                "User logged out successfully.",
             ),
         );
     }

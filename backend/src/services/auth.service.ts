@@ -1,7 +1,7 @@
 import * as authRepository from "../repositories/auth.repository";
 import { comparePassword, hashPassword } from "../utils/password.util";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt.util";
-import type { AuthResponse, JwtPayload, StudentRegisterRequest, LecturerRegisterRequest, LoginRequest } from "../types/auth.types";
+import type { AuthResponse, JwtPayload, StudentRegisterRequest, LecturerRegisterRequest, LoginRequest, AuthUser } from "../types/auth.types";
 import { AppError } from "../common/errors/app.error";
 import { ERROR_CODES } from "../constants/error.codes.constants";
 import { HTTP_STATUS } from "../constants/http.constants";
@@ -9,7 +9,7 @@ import * as studentRepository from "../repositories/student.repository";
 import * as lecturerRepository from "../repositories/lecturer.repository";
 import { USER_ROLES, USER_STATUS } from "../constants/auth.constants";
 
-export const studentRegister = async (data: StudentRegisterRequest): Promise<void> => {
+export const studentRegister = async (data: StudentRegisterRequest): Promise<AuthUser> => {
     const emailExists = await authRepository.userExistsByEmail(data.email);
 
     if (emailExists) {
@@ -36,9 +36,11 @@ export const studentRegister = async (data: StudentRegisterRequest): Promise<voi
         name: data.name,
         dateOfBirth: data.dateOfBirth,
     });
+
+    return user;
 };
 
-export const lecturerRegister = async (data: LecturerRegisterRequest): Promise<void> => {
+export const lecturerRegister = async (data: LecturerRegisterRequest): Promise<AuthUser> => {
     const emailExists = await authRepository.userExistsByEmail(data.email);
 
     if (emailExists) {
@@ -65,6 +67,8 @@ export const lecturerRegister = async (data: LecturerRegisterRequest): Promise<v
         name: data.name,
         designation: data.designation,
     });
+
+    return user;
 };
 
 export const login = async (data: LoginRequest): Promise<AuthResponse> => {
