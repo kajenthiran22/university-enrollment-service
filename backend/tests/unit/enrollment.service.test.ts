@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeEach, jest } from "@jest/globals";
+import mongoose from "mongoose";
+
 import * as enrollmentRepository from "../../src/repositories/enrollment.repository";
 import * as enrollmentService from "../../src/services/enrollment.service";
 import * as studentRepository from "../../src/repositories/student.repository";
@@ -11,6 +13,14 @@ jest.mock("../../src/repositories/course.repository");
 describe("Enrollment Service Unit Tests", () => {
     beforeEach(() => {
         jest.clearAllMocks();
+
+        jest.spyOn(mongoose, "startSession")
+            .mockResolvedValue({
+                startTransaction: jest.fn(),
+                commitTransaction: jest.fn(),
+                abortTransaction: jest.fn(),
+                endSession: jest.fn(),
+            } as any);
     });
 
     it("should enroll student successfully", async () => {
@@ -22,7 +32,9 @@ describe("Enrollment Service Unit Tests", () => {
         jest.spyOn(courseRepository, "findCourseById")
             .mockResolvedValue({
                 id: "course123",
-                enrollmentOpen: true
+                enrollmentOpen: true,
+                enrolledCount: 0,
+                capacity: 50,
             } as any);
 
         jest.spyOn(enrollmentRepository, "findEnrollment")
@@ -37,15 +49,20 @@ describe("Enrollment Service Unit Tests", () => {
                 enrolledAt: new Date(),
             } as any);
 
+        jest.spyOn(courseRepository, "updateCourse")
+            .mockResolvedValue({
+                id: "course123",
+            } as any);
+
         const result = await enrollmentService.enrollStudent(
             "user123",
             "course123",
         );
 
-        expect(result.id)
+        expect(result?.id)
             .toBe("enrollment123");
 
-        expect(result.status)
+        expect(result?.status)
             .toBe("active");
 
         expect(enrollmentRepository.createEnrollment)
@@ -75,6 +92,11 @@ describe("Enrollment Service Unit Tests", () => {
                 withdrawnAt: new Date(),
             } as any);
 
+        jest.spyOn(courseRepository, "updateCourse")
+            .mockResolvedValue({
+                id: "course123",
+            } as any);
+
         const result = await enrollmentService.withdrawStudent(
             "user123",
             "course123",
@@ -85,6 +107,9 @@ describe("Enrollment Service Unit Tests", () => {
 
         expect(result?.status)
             .toBe("withdrawn");
+
+        expect(enrollmentRepository.withdrawEnrollment)
+            .toHaveBeenCalled();
     });
 
     it("should return all enrollments", async () => {
@@ -114,9 +139,10 @@ describe("Enrollment Service Unit Tests", () => {
                 id: "enrollment123",
             } as any);
 
-        const result = await enrollmentService.getEnrollmentById(
-            "enrollment123",
-        );
+        const result =
+            await enrollmentService.getEnrollmentById(
+                "enrollment123",
+            );
 
         expect(result?.id)
             .toBe("enrollment123");
