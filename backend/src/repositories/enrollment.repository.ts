@@ -1,12 +1,20 @@
+import type { ClientSession } from "mongoose";
 import { EnrollmentModel } from "../models/enrollment.model";
 import type { EnrollmentDocument, CreateEnrollmentRequest, UpdateEnrollmentRequest } from "../types/enrollment.types";
 
-export const createEnrollment = async (data: CreateEnrollmentRequest): Promise<EnrollmentDocument> => {
-    return EnrollmentModel.create(data);
+export const createEnrollment = async (data: CreateEnrollmentRequest, session?: ClientSession): Promise<EnrollmentDocument> => {
+    const result = await EnrollmentModel.create([data], { session: session || null });
+    return result[0] as EnrollmentDocument;
 };
 
-export const findEnrollment = async (studentId: string, courseId: string): Promise<EnrollmentDocument | null> => {
-    return EnrollmentModel.findOne({ studentId, courseId });
+export const findEnrollment = async (studentId: string, courseId: string, session?: ClientSession): Promise<EnrollmentDocument | null> => {
+    const query = EnrollmentModel.findOne({ studentId, courseId });
+
+    if (session) {
+        query.session(session);
+    }
+
+    return query;
 };
 
 export const findEnrollmentById = async (id: string): Promise<EnrollmentDocument | null> => {
@@ -40,7 +48,7 @@ export const countActiveEnrollments = async (courseId: string) => {
     });
 };
 
-export const withdrawEnrollment = async (studentId: string, courseId: string) => {
+export const withdrawEnrollment = async (studentId: string, courseId: string, session?: ClientSession) => {
     return EnrollmentModel.findOneAndUpdate(
         {
             studentId,
@@ -52,17 +60,19 @@ export const withdrawEnrollment = async (studentId: string, courseId: string) =>
         },
         {
             new: true,
+            session: session || null,
         },
     );
 };
 
-export const updateEnrollment = async (id: string, data: UpdateEnrollmentRequest): Promise<EnrollmentDocument | null> => {
+export const updateEnrollment = async (id: string, data: UpdateEnrollmentRequest, session?: ClientSession): Promise<EnrollmentDocument | null> => {
     return EnrollmentModel.findByIdAndUpdate(
         id,
         data,
         {
             new: true,
             runValidators: true,
+            session: session || null,
         },
     );
 };
