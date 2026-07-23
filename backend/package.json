@@ -13,7 +13,8 @@
     "test:e2e": "playwright test",
     "performance:login": "k6 run tests/performance/login.k6.ts",
     "performance:enroll": "k6 run tests/performance/enroll.k6.ts",
-    "performance:withdraw": "k6 run tests/performance/withdraw.k6.ts"
+    "performance:withdraw": "k6 run tests/performance/withdraw.k6.ts",
+    "seed:admin": "node dist/scripts/admin.seed.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
