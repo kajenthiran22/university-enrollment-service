@@ -31,10 +31,10 @@ services:
   mongodb:
     container_name: university-enrollment-service-mongodb
 
-    image: mongo:8
+    image: mongo:8.0
 
-    ports:
-      - "27017:27017"
+    # ports:
+    #   - "27017:27017"
 
     environment:
       MONGO_INITDB_DATABASE: university_enrollment_service

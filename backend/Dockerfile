@@ -18,13 +18,19 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-COPY package*.json ./
+# Copy dependency files
+COPY --chown=node:node package*.json ./
 
 RUN npm ci --omit=dev
 
-COPY --from=builder /app/dist ./dist
+# Copy compiled application
+COPY --from=builder --chown=node:node /app/dist ./dist
 
-COPY --from=builder /app/openapi.yaml ./openapi.yaml
+# Copy OpenAPI specification
+COPY --from=builder --chown=node:node /app/openapi.yaml ./openapi.yaml
+
+# Run as non-root user
+USER node
 
 EXPOSE 3000
 

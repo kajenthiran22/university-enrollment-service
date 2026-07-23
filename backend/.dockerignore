@@ -1,25 +1,33 @@
+# Dependencies
 node_modules
+
+# Build output
 dist
 
-# Ignore all .env files
+# Environment variables
 .env
 .env.*
-!.env.example
 
-postman
-seed-data
-
+# Git
 .git
 .gitignore
 
+# Logs
+*.log
+
+# Tests
 tests
 playwright-report
 test-results
 jest.config.ts
 playwright.config.ts
 
-Dockerfile
-docker-compose.yml
+# Development files
+postman
+seed-data
 
+# Compose files
+compose.yaml
+
+# Documentation
 *.md
-!README.md
