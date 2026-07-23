@@ -15,6 +15,17 @@ components:
       description: Enter JWT access token
 
 paths:
+  /health:
+    get:
+      summary: Check application health status
+      tags:
+        - Health
+      responses:
+        "200":
+          description: Application is healthy
+        "503":
+          description: Application or database is unavailable
+
   /auth/register/student:
     post:
       summary: Register Student
