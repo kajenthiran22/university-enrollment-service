@@ -6,8 +6,11 @@ import studentRoutes from "./student.route";
 import lecturerRoutes from "./lecturer.route";
 import courseRoutes from "./course.route";
 import enrollmentRoutes from "./enrollment.route";
+import healthRoutes from "./health.route";
 
 const router = Router();
+
+router.use("/health", healthRoutes);
 
 router.use('/auth', authRoutes);
 router.use('/admin', adminRoutes);
